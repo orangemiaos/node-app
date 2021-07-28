@@ -23,7 +23,8 @@ const getPostData = (req, res) => {
         resolve({});
         return;
       }
-      resolve(postData);
+      // postData是一个字符串
+      resolve(JSON.parse(postData));
     });
   });
 };
@@ -77,13 +78,11 @@ module.exports = (req, res) => {
   // 获取post传递过来的数据，放在req.body 上
   getPostData(req, res).then((postData) => {
     req.body = postData;
-
-    console.log("query", req.query);
-    console.log("body", req.body);
     // 处理路由时会用到postData，所以先获取再处理路由
-    handleRouter(req, res);
+    // 返回的结果是登录成功，或者登陆失败的码
+    let result = handleRouter(req, res);
 
     // response.end()方法接收的参数类型只能是字符串或Buffer，
-    res.end(JSON.stringify(postData));
+    res.end(JSON.stringify(result));
   });
 };
