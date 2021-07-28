@@ -29,13 +29,27 @@ const getPostData = (req, res) => {
   });
 };
 
-module.exports = (req, res) => {
-  res.setHeader("Content-Type", "application/json");
+/*
+ * post请求，或者get请求未传参，则挂载空对象
+ */
+const getGetData = (req, res) => {
+  let url = req.url;
+  req.query = {};
+  let query = url.split("?")[1];
+  if (query) {
+    query.split("&").forEach((item) => {
+      let arr = item.split("=");
+      req.query[arr[0]] = arr[1];
+    });
+  }
+};
 
-  /*
-   * 判断是否包含那个需要验证的cookie
-   * cookie是一个拼接的字符串，所以要拆分开，再查询是否有我们需要的那个(sessionId)
-   */
+/*
+ * 判断是否包含那个需要验证的cookie
+ * cookie是一个拼接的字符串，所以要拆分开，再查询是否有我们需要的那个(sessionId)
+ */
+const handleCookie = (req, res) => {
+  let maxAge = 24 * 60 * 60 * 1000;
   req.cookie = {};
   if (req.headers.cookie) {
     req.headers.cookie.split("; ").forEach((item) => {
@@ -58,22 +72,19 @@ module.exports = (req, res) => {
     // cookie不可以使用中文
     res.setHeader(
       "Set-Cookie",
-      `userid=${userid}; path=/; httpOnly; max-age=${24 * 60 * 60 * 1000}`
+      `userid=${userid}; path=/; httpOnly; max-age=${maxAge}`
     );
   }
+};
+
+module.exports = (req, res) => {
+  res.setHeader("Content-Type", "application/json");
+
+  // 处理cookie
+  handleCookie(req, res);
 
   // 获取get传递过来的数据，放在req.query 上
-  // post请求，或者get请求未传参则挂载空对象
-  let url = req.url;
-  req.query = {};
-
-  let query = url.split("?")[1];
-  if (query) {
-    query.split("&").forEach((item) => {
-      let arr = item.split("=");
-      req.query[arr[0]] = arr[1];
-    });
-  }
+  getGetData(req, res);
 
   // 获取post传递过来的数据，放在req.body 上
   getPostData(req, res).then((postData) => {
