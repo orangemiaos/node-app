@@ -9,7 +9,8 @@ module.exports = (req, res) => {
   }
   // 处理登录
   if (method === "POST" && url === "/api/login") {
-    if (req.body.username === "zhangmeng" && req.body.password === "123456") {
+    let { username, password } = req.body;
+    if (username === "zhangmeng" && password === "123456") {
       return new SuccessModal("登录成功");
     }
 

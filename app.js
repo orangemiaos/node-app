@@ -1,4 +1,4 @@
-const handleRouter = require("./src/router");
+const handleLoginRouter = require("./src/router/login");
 const { handlePostData, handleQuery, handleCookie } = require("./src/utils");
 
 module.exports = (req, res) => {
@@ -36,9 +36,10 @@ module.exports = (req, res) => {
    */
   handlePostData(req, res).then((postData) => {
     req.body = postData;
+    
     // 处理路由时会用到postData，所以先获取再处理路由
     // 返回处理路由的结果
-    let result = handleRouter(req, res);
+    let result = handleLoginRouter(req, res);
     if (result) {
       // response.end()方法接收的参数类型只能是字符串或Buffer，
       res.end(JSON.stringify(result));
