@@ -1,14 +1,34 @@
 const handleRouter = require("./src/router");
-const { getPostData, getGetData, handleCookie } = require("./src/utils");
+const { getPostData, handleQuery, handleCookie } = require("./src/utils");
 
 module.exports = (req, res) => {
   res.setHeader("Content-Type", "application/json");
 
-  // 处理cookie
+  // 获取path
+  let url = req.url;
+  req.path = url.split("?")[0];
+
+  // 解析query，获取get传递过来的数据，放在req.query 上
+  handleQuery(req, res);
+
+  // 解析cookie
   handleCookie(req, res);
 
-  // 获取get传递过来的数据，放在req.query 上
-  getGetData(req, res);
+  let needSetCookie = false;
+  let userid = req.cookie.userid;
+  if (!userid) {
+    needSetCookie = true;
+    userid = `${Date.now()}_${Math.random()}`;
+  }
+
+  if (needSetCookie) {
+    // 过期时间如果使用max-age，max-age的单位是s，过期后浏览器会自动清楚cookie，下次请求会重新setCookie
+    // cookie不可以使用中文
+    res.setHeader(
+      "Set-Cookie",
+      `userid=${userid}; path=/; httpOnly; max-age=${maxAge}`
+    );
+  }
 
   // 获取post传递过来的数据，放在req.body 上
   getPostData(req, res).then((postData) => {
