@@ -1,5 +1,5 @@
 const handleRouter = require("./src/router");
-const { getPostData, handleQuery, handleCookie } = require("./src/utils");
+const { handlePostData, handleQuery, handleCookie } = require("./src/utils");
 
 module.exports = (req, res) => {
   res.setHeader("Content-Type", "application/json");
@@ -14,30 +14,43 @@ module.exports = (req, res) => {
   // 解析cookie
   handleCookie(req, res);
 
-  let needSetCookie = false;
-  let userid = req.cookie.userid;
-  if (!userid) {
-    needSetCookie = true;
-    userid = `${Date.now()}_${Math.random()}`;
-  }
+  // let needSetCookie = false;
+  // let userid = req.cookie.userid;
+  // if (!userid) {
+  //   needSetCookie = true;
+  //   userid = `${Date.now()}_${Math.random()}`;
+  // }
 
-  if (needSetCookie) {
-    // 过期时间如果使用max-age，max-age的单位是s，过期后浏览器会自动清楚cookie，下次请求会重新setCookie
-    // cookie不可以使用中文
-    res.setHeader(
-      "Set-Cookie",
-      `userid=${userid}; path=/; httpOnly; max-age=${maxAge}`
-    );
-  }
+  // if (needSetCookie) {
+  //   // 过期时间如果使用max-age，max-age的单位是s，过期后浏览器会自动清楚cookie，下次请求会重新setCookie
+  //   // cookie不可以使用中文
+  //   res.setHeader(
+  //     "Set-Cookie",
+  //     `userid=${userid}; path=/; httpOnly; max-age=${maxAge}`
+  //   );
+  // }
 
-  // 获取post传递过来的数据，放在req.body 上
-  getPostData(req, res).then((postData) => {
+  /*
+   * 获取post传递过来的数据，放在req.body 上
+   * 由于是获取post参数异步方法，后续内容需要异步回调
+   */
+  handlePostData(req, res).then((postData) => {
     req.body = postData;
     // 处理路由时会用到postData，所以先获取再处理路由
-    // 返回的结果是登录成功，或者登陆失败的码
+    // 返回处理路由的结果
     let result = handleRouter(req, res);
+    if (result) {
+      // response.end()方法接收的参数类型只能是字符串或Buffer，
+      res.end(JSON.stringify(result));
+      return;
+    }
 
-    // response.end()方法接收的参数类型只能是字符串或Buffer，
-    res.end(JSON.stringify(result));
+    /*
+     * 未命中路由，返回 404
+     * response.writeHead，向请求发送响应头
+     * params 1.code 2.响应头
+     */
+    res.writeHead(404, { "Content-type": "text/plain" });
+    res.end("404 Not Found\n");
   });
 };

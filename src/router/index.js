@@ -4,6 +4,9 @@ module.exports = (req, res) => {
   let method = req.method;
   let url = req.url;
 
+  if (method === "GET" && url === "/") {
+    return "/";
+  }
   // 处理登录
   if (method === "POST" && url === "/api/login") {
     if (req.body.username === "zhangmeng" && req.body.password === "123456") {

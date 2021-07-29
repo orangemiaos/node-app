@@ -33,11 +33,11 @@ const handleCookie = (req, res) => {
 };
 
 /*
- *  获取post传递过来的数据，是一个对象
- *  如果是get方法，则返回一个空对象即可
- *  如果post方法没有传递参数，也返回一个空对象
+ *  获取post传递过来的数据，放到body上
+ *  post传递过来的是一个对象
+ *  如果是get方法，则返回一个空对象。如果post方法没有传递参数，也返回一个空对象
  */
-const getPostData = (req, res) => {
+const handlePostData = (req, res) => {
   return new Promise((resolve) => {
     if (req.method !== "POST") {
       resolve({});
@@ -55,14 +55,14 @@ const getPostData = (req, res) => {
         resolve({});
         return;
       }
-      // postData是一个字符串
+      // postData是一个字符串，需要转为对象形式传回
       resolve(JSON.parse(postData));
     });
   });
 };
 
 module.exports = {
-  getPostData,
   handleQuery,
   handleCookie,
+  handlePostData,
 };
