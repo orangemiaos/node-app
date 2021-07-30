@@ -23,19 +23,6 @@ module.exports = (req, res) => {
     set(userid, {});
   }
 
-  get("1627662820190_0.1365426094634734").then((res) => {
-    console.log(88, res, typeof res);
-  });
-
-  // if (needSetCookie) {
-  //   // 过期时间如果使用max-age，max-age的单位是s，过期后浏览器会自动清楚cookie，下次请求会重新setCookie
-  //   // cookie不可以使用中文
-  //   res.setHeader(
-  //     "Set-Cookie",
-  //     `userid=${userid}; path=/; httpOnly; max-age=${maxAge}`
-  //   );
-  // }
-
   /*
    * 获取post传递过来的数据，放在req.body 上
    * 由于是获取post参数异步方法，后续内容需要异步回调
@@ -47,6 +34,14 @@ module.exports = (req, res) => {
     // 返回处理路由的结果
     let result = handleLoginRouter(req, res);
     if (result) {
+      if (needSetCookie) {
+        // 过期时间如果使用max-age，max-age的单位是s，过期后浏览器会自动清除cookie，下次请求会重新setCookie
+        // cookie不可以使用中文
+        res.setHeader(
+          "Set-Cookie",
+          `userid=${userid}; path=/; httpOnly; max-age=${maxAge}`
+        );
+      }
       // response.end()方法接收的参数类型只能是字符串或Buffer，
       res.end(JSON.stringify(result));
       return;

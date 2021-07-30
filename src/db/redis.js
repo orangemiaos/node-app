@@ -23,7 +23,8 @@ function get(key) {
         reject(err);
         return;
       }
-      resolve(val);
+      // 取到的val也是字符串，转为对象格式
+      resolve(JSON.parse(val));
     });
   });
 }
