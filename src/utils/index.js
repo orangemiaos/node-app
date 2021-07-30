@@ -20,7 +20,6 @@ const handleQuery = (req, res) => {
  * cookie是一个拼接的字符串，所以要拆分开，再查询是否有我们需要的那个(sessionId)
  */
 const handleCookie = (req, res) => {
-  let maxAge = 24 * 60 * 60 * 1000;
   req.cookie = {};
   if (req.headers.cookie) {
     req.headers.cookie.split("; ").forEach((item) => {
@@ -37,7 +36,7 @@ const handleCookie = (req, res) => {
  *  post传递过来的是一个对象
  *  如果是get方法，则返回一个空对象。如果post方法没有传递参数，也返回一个空对象
  */
-const handlePostData = (req, res) => {
+const handlePostData = (req) => {
   return new Promise((resolve) => {
     if (req.method !== "POST") {
       resolve({});
