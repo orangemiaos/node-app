@@ -1,5 +1,6 @@
 const handleLoginRouter = require("./src/router/login");
 const { handlePostData, handleQuery, handleCookie } = require("./src/utils");
+const { set, get } = require("./src/db/redis");
 
 module.exports = (req, res) => {
   res.setHeader("Content-Type", "application/json");
@@ -14,12 +15,17 @@ module.exports = (req, res) => {
   // 解析cookie
   handleCookie(req, res);
 
-  // let needSetCookie = false;
-  // let userid = req.cookie.userid;
-  // if (!userid) {
-  //   needSetCookie = true;
-  //   userid = `${Date.now()}_${Math.random()}`;
-  // }
+  let needSetCookie = false;
+  let userid = req.cookie.userid;
+  if (!userid) {
+    needSetCookie = true;
+    userid = `${Date.now()}_${Math.random()}`;
+    set(userid, {});
+  }
+
+  get("1627662820190_0.1365426094634734").then((res) => {
+    console.log(88, res, typeof res);
+  });
 
   // if (needSetCookie) {
   //   // 过期时间如果使用max-age，max-age的单位是s，过期后浏览器会自动清楚cookie，下次请求会重新setCookie
@@ -36,7 +42,7 @@ module.exports = (req, res) => {
    */
   handlePostData(req, res).then((postData) => {
     req.body = postData;
-    
+
     // 处理路由时会用到postData，所以先获取再处理路由
     // 返回处理路由的结果
     let result = handleLoginRouter(req, res);
