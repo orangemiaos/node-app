@@ -1,17 +1,22 @@
 const { SuccessModal, ErrorModal } = require("../modal");
 const { set } = require("../db/redis");
 const { login, register } = require("../controller/user");
+const { encryption } = require("../utils/crypto");
 
 module.exports = (req, res) => {
   let method = req.method;
   let url = req.url;
 
   // 通过userId检查登录信息
-  if (method === "GET" && url === "/login-check") {
-    if (req.session) {
-      return Promise.resolve("已登录");
-    }
-    return Promise.reject(new ErrorModal("没登录"));
+  // if (method === "GET" && url === "/login-check") {
+  //   if (req.session) {
+  //     return Promise.resolve("已登录");
+  //   }
+  //   return Promise.reject(new ErrorModal("没登录"));
+  // }
+
+  if (method === "GET" && url === "/") {
+    return Promise.resolve(encryption("345"));
   }
 
   // 处理注册

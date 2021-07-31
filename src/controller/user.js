@@ -1,7 +1,10 @@
 const { exec, escape } = require("../db/mysql");
+const { encryption } = require("../utils/crypto");
 
 function login(username, password) {
   username = escape(username);
+
+  password = encryption(password);
   password = escape(password);
   /*
    * sql注入
@@ -16,6 +19,7 @@ function login(username, password) {
 }
 
 function register(username, password) {
+  password = encryption(password);
   let sql = `insert into users (username,password) values ('${username}','${password}')`;
   return exec(sql).then((rows) => {
     return { id: rows.insertId };
