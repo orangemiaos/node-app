@@ -10,12 +10,19 @@ function login(username, password) {
    * 引用sql.escape，将输入内容都转译为“”,遇到特殊字符做转译
    */
   let sql = `select username,password from users where username=${username} and password=${password}`;
-  console.log("sql", sql);
   return exec(sql).then((rows) => {
     return rows[0] || {};
   });
 }
 
+function register(username, password) {
+  let sql = `insert into users (username,password) values ('${username}','${password}')`;
+  return exec(sql).then((rows) => {
+    return { id: rows.insertId };
+  });
+}
+
 module.exports = {
   login,
+  register,
 };
