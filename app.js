@@ -44,17 +44,19 @@ module.exports = (req, res) => {
       // 返回处理路由的结果
       let result = handleLoginRouter(req, res);
       if (result) {
-        if (needSetCookie) {
-          let maxAge = 24 * 60 * 60 * 1000;
-          // 过期时间如果使用max-age，max-age的单位是s，过期后浏览器会自动清除cookie，下次请求会重新setCookie
-          // cookie不可以使用中文
-          res.setHeader(
-            "Set-Cookie",
-            `userid=${userid}; path=/; httpOnly; max-age=${maxAge}`
-          );
-        }
-        // response.end()方法接收的参数类型只能是字符串或Buffer，
-        res.end(JSON.stringify(result));
+        result.then((userData) => {
+          if (needSetCookie) {
+            let maxAge = 24 * 60 * 60 * 1000;
+            // 过期时间如果使用max-age，max-age的单位是s，过期后浏览器会自动清除cookie，下次请求会重新setCookie
+            // cookie不可以使用中文
+            res.setHeader(
+              "Set-Cookie",
+              `userid=${userid}; path=/; httpOnly; max-age=${maxAge}`
+            );
+          }
+          // response.end()方法接收的参数类型只能是字符串或Buffer，
+          res.end(JSON.stringify(userData));
+        });
         return;
       }
 
